@@ -18,7 +18,7 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name = "package_id", referencedColumnName = "package_id", nullable = false)
-    private Package aPackage;
+    private Packet aPacket;
 
     @ManyToOne
     @JoinColumn(name = "cat_id", referencedColumnName = "cat_id", nullable = false)

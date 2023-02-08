@@ -10,11 +10,14 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table
-public class Package {
+public class Packet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "package_id")
     private Integer packageId;
+
+    @Column(name = "package_name", unique = true)
+    private String packageName;
 
     @Column(name = "description")
     private String description;

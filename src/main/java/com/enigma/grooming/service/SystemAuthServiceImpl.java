@@ -3,18 +3,12 @@ package com.enigma.grooming.service;
 import com.enigma.grooming.exception.EntityExistException;
 import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.exception.UnauthorizedException;
-import com.enigma.grooming.model.Auth;
 import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.User;
-import com.enigma.grooming.model.request.GoogleAccountRequest;
-import com.enigma.grooming.model.request.RegistrationGoogleRequest;
+import com.enigma.grooming.model.request.LoginRequest;
 import com.enigma.grooming.model.request.RegistrationRequest;
-import com.enigma.grooming.model.response.ErrorResponse;
-import com.enigma.grooming.repository.AuthRepository;
 import com.enigma.grooming.repository.SystemAuthRepository;
 import com.enigma.grooming.util.JwtUtil;
-import com.enigma.grooming.util.Role;
-import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,38 +36,34 @@ public class SystemAuthServiceImpl implements SystemAuthService {
 
     @Transactional
     @Override
-    public String register(RegistrationRequest registrationRequest) {
+    public User register(RegistrationRequest registrationRequest) {
         try {
-            SystemAuth newAuth = modelMapper.map(registrationRequest, SystemAuth.class);
-            if (!systemAuthRepository.findById(newAuth.getEmail()).isEmpty()){
+            if (systemAuthRepository.findById(registrationRequest.getEmail()).isPresent()){
                 throw new EntityExistException("Email is exist");
             }
+            SystemAuth newAuth = modelMapper.map(registrationRequest, SystemAuth.class);
             SystemAuth authResult = systemAuthRepository.save(newAuth);
             User user = modelMapper.map(registrationRequest, User.class);
             user.setSystemAuth(authResult);
 
-            userService.create(user);
-
-
-            String token = jwtUtil.generateToken(user.getSystemAuth().getEmail());
-            return token;
+            return userService.create(user);
 
         } catch (DataIntegrityViolationException e) {
-            throw new EntityExistsException();
+            throw new EntityExistException("Email is exist");
         }
     }
 
     @Override
-    public String login(RegistrationRequest registrationRequest) {
+    public String login(LoginRequest loginRequest) {
         try {
-            Optional<SystemAuth> auth = systemAuthRepository.findById(registrationRequest.getEmail());
+            Optional<SystemAuth> auth = systemAuthRepository.findById(loginRequest.getEmail());
             if (auth.isEmpty()) {
                 throw new NotFoundException();
-            } else if (!auth.get().getPassword().equals(registrationRequest.getPassword())) {
+            } else if (!auth.get().getPassword().equals(loginRequest.getPassword())) {
                 throw new UnauthorizedException("Password not matched");
             }
 
-            String token = jwtUtil.generateToken(registrationRequest.getEmail());
+            String token = jwtUtil.generateToken(loginRequest.getEmail());
             return token;
 
         } catch (Exception e) {

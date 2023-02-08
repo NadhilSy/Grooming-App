@@ -1,9 +1,10 @@
 package com.enigma.grooming.service;
 
-import com.enigma.grooming.model.request.GoogleAccountRequest;
+import com.enigma.grooming.model.User;
+import com.enigma.grooming.model.request.LoginRequest;
 import com.enigma.grooming.model.request.RegistrationRequest;
 
 public interface SystemAuthService {
-    String register(RegistrationRequest registrationRequest);
-    String login(RegistrationRequest registrationRequest);
+    User register(RegistrationRequest registrationRequest);
+    String login(LoginRequest loginRequest);
 }
