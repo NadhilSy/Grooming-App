@@ -38,7 +38,7 @@ public class SystemAuthServiceImpl implements SystemAuthService {
     @Override
     public User register(RegistrationRequest registrationRequest) {
         try {
-            if (systemAuthRepository.findById(registrationRequest.getEmail()).isPresent()){
+            if (systemAuthRepository.findById(registrationRequest.getEmail()).isPresent()) {
                 throw new EntityExistException("Email is exist");
             }
             SystemAuth newAuth = modelMapper.map(registrationRequest, SystemAuth.class);
@@ -56,14 +56,14 @@ public class SystemAuthServiceImpl implements SystemAuthService {
     @Override
     public String login(LoginRequest loginRequest) {
         try {
-            Optional<SystemAuth> auth = systemAuthRepository.findById(loginRequest.getEmail());
+            Optional<SystemAuth> auth = systemAuthRepository.findByEmail(loginRequest.getEmail());
             if (auth.isEmpty()) {
                 throw new NotFoundException();
             } else if (!auth.get().getPassword().equals(loginRequest.getPassword())) {
                 throw new UnauthorizedException("Password not matched");
             }
-            var userInfo = userService.findBySystemAuth(auth.get());
-            String token = jwtUtil.generateToken(loginRequest.getEmail()+" "+userInfo.get().getName());
+            Optional<User> userInfo = userService.findBySystemAuth(auth.get());
+            String token = jwtUtil.generateToken(loginRequest.getEmail() + " " + userInfo.get().getName() + " " +auth.get().getRole());
             return token;
 
         } catch (Exception e) {
@@ -74,10 +74,10 @@ public class SystemAuthServiceImpl implements SystemAuthService {
     @Override
     public SystemAuth findByEmail(String email) {
         Optional<SystemAuth> result = systemAuthRepository.findByEmail(email);
-        if (result.isPresent()){
+        if (result.isPresent()) {
             return result.get();
         }
-        throw new NotFoundException("Username with email "+ email + "is not exists");
+        throw new NotFoundException("Username with email " + email + "is not exists");
     }
 
 //    public Optional<SystemAuth> findByEmailOpt(String email){}

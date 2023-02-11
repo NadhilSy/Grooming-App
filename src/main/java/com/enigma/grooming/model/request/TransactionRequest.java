@@ -1,18 +1,14 @@
 package com.enigma.grooming.model.request;
 
 import com.enigma.grooming.model.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+import lombok.Setter;
 
+@Data
 public class TransactionRequest {
-
-    //cat
-    private String catName;
-    private String color;
-    private String gender;
-    private String race;
-    private String catImageUrl;
-    private User user;
+    @JsonIgnore
+    User user;
+    String catId;
+    Integer packetId;
 }

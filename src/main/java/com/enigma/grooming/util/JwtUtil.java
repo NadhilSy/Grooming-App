@@ -1,6 +1,7 @@
 package com.enigma.grooming.util;
 
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,8 @@ public class JwtUtil {
     @Value("${jwt.jwt_secret}")
     private String jwtSecret;
     @Value("${jwt.jwt_expire}")
-    private  Integer jwtExpiration;
+    private Integer jwtExpiration;
+
     public String generateToken(String subject) {
         return Jwts.builder()
                 .setSubject(subject)
@@ -27,12 +29,19 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
-    public String getUserName(String token){
+
+    public String getUserName(String token) {
         return getTokenSubject(token).split(" ")[1];
     }
-    public String getMail(String token){
+
+    public String getMail(String token) {
         return getTokenSubject(token).split(" ")[0];
     }
+
+    public String getRole(String token) {
+        return getTokenSubject(token).split(" ")[2];
+    }
+
     public boolean validateJwtToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);

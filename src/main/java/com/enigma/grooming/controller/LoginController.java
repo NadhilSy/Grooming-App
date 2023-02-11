@@ -12,6 +12,7 @@ import com.enigma.grooming.service.UserService;
 import com.enigma.grooming.util.JwtUtil;
 import io.jsonwebtoken.Jwt;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,24 +50,24 @@ public class LoginController {
 //        return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Success Login",token));
 //    }
 
-//    @Order(2)//
+    //    @Order(2)//
     @Transactional
     @PostMapping("/login")
-    public ResponseEntity currentUser2(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity currentUser2(@Valid @RequestBody LoginRequest loginRequest) {
 //        Map<String ,Object> data = oAuth2AuthenticationToken.getPrincipal().getAttributes();
 //        GoogleAccountRequest google = modelMapper.map(data,GoogleAccountRequest.class);
         String token = systemAuthService.login(loginRequest);
         String name = jwtUtil.getUserName(token);
-        LoginResponse loginResponse = new LoginResponse(name,token);
+        LoginResponse loginResponse = new LoginResponse(name, token);
 //        User userInfo = userService.findBySystemAuth(systemAuthService.findByEmail(jwtUtil.getMail(token))).get();
 //        System.out.println(google);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
-//    @Order(1)
+    //    @Order(1)
     @Transactional
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegistrationRequest registrationRequest) {
+    public ResponseEntity register(@Valid @RequestBody RegistrationRequest registrationRequest) {
         User resp = systemAuthService.register(registrationRequest);
         RegisterResponse registerResponse = new RegisterResponse(resp);
         return ResponseEntity.status(HttpStatus.OK).body(registerResponse);

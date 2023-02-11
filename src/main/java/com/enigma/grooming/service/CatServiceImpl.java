@@ -3,12 +3,10 @@ package com.enigma.grooming.service;
 import com.enigma.grooming.exception.EntityExistException;
 import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Cat;
-import com.enigma.grooming.model.SystemAuth;
-import com.enigma.grooming.model.User;
+import com.enigma.grooming.model.request.CatListRequest;
 import com.enigma.grooming.model.request.CatRequest;
 import com.enigma.grooming.repository.CatRepository;
 import com.enigma.grooming.repository.UserRepository;
-import com.enigma.grooming.util.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,35 +24,22 @@ public class CatServiceImpl implements CatService {
 
     private CatRepository catRepository;
     private ModelMapper modelMapper;
-    private JwtUtil jwtUtil;
-    private SystemAuthService systemAuthService;
-    private UserRepository userRepository;
 
     @Autowired
-    public CatServiceImpl(CatRepository catRepository, ModelMapper modelMapper, JwtUtil jwtUtil, SystemAuthService systemAuthService, UserRepository userRepository) {
+    public CatServiceImpl(CatRepository catRepository, ModelMapper modelMapper) {
         this.catRepository = catRepository;
         this.modelMapper = modelMapper;
-        this.jwtUtil = jwtUtil;
-        this.systemAuthService = systemAuthService;
-        this.userRepository = userRepository;
     }
 
     @Transactional
     @Override
     public Cat create(CatRequest catRequest) {
         try {
-            String mail = jwtUtil.getMail(catRequest.getToken());
 //            if (!systemAuthService.findByEmail(mail).equals(mail)){
 //                throw new NotFoundException();
 //            }
-
-            SystemAuth existingSystemAuth = systemAuthService.findByEmail(mail);
-//                    catRepository.findByMailEquals(mail);
-            Optional<User> user = userRepository.findBySystemAuth(existingSystemAuth);
-            User newUser = user.get();
             Cat cat = modelMapper.map(catRequest, Cat.class);
-            cat.setUser(newUser);
-
+            cat.setUser(catRequest.getUserInfo());
 //            cat.setUser();
 //            User tes  = cat.getUser().getSystemAuth().setEmail(existingSystemAuth.getEmail());
             return catRepository.save(cat);
@@ -72,17 +57,10 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public Page<Cat> getListByUser(Integer page, Integer size, String direction, String sortBy, String token) {
-        String mail = jwtUtil.getMail(token);
-        System.out.println(mail);
-        SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
-        Optional<User> userOpt = userRepository.findBySystemAuth(existingSysAuth);
-        User newUser = userOpt.get();
-        Integer id = newUser.getUserId();
-        System.out.println(id);
+    public Page<Cat> getListByUser(Integer page, Integer size, String direction, String sortBy, CatListRequest catListRequest) {
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of((page - 1), size, sort);
-        Page<Cat> result = catRepository.findAllByUser(newUser,pageable);
+        Page<Cat> result = catRepository.findAllByUser(catListRequest.getUserInfo(), pageable);
         System.out.println(result);
         return result;
     }
@@ -123,6 +101,5 @@ public class CatServiceImpl implements CatService {
         }
         return cat.get();
     }
-
 
 }

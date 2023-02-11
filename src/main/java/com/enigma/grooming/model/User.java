@@ -19,11 +19,11 @@ public class User {
     private Integer userId;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "emailGoogle", referencedColumnName = "email",unique = true)
+    @JoinColumn(name = "emailGoogle", referencedColumnName = "email", unique = true)
     private Auth auth;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "email", referencedColumnName = "email",unique = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "email", referencedColumnName = "email", unique = true)
     private SystemAuth systemAuth;
 
     @Column(name = "name", nullable = false)

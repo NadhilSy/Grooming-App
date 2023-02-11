@@ -1,5 +1,6 @@
 package com.enigma.grooming.model;
 
+import com.enigma.grooming.model.constant.TrxStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,18 +16,14 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
     private Integer transactionId;
-
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "package_id", referencedColumnName = "package_id", nullable = false)
-    private Packet aPacket;
-
-    @ManyToOne
+    private Packet packet;
+    @OneToOne
+    private User user;
+    @OneToOne
     @JoinColumn(name = "cat_id", referencedColumnName = "cat_id", nullable = false)
     private Cat cat;
-
-    @ManyToOne
-    @JoinColumn(name = "status_id", referencedColumnName = "status_id", nullable = false)
-    private Status status;
-
-
+    @Enumerated(EnumType.STRING)
+    TrxStatus status;
 }

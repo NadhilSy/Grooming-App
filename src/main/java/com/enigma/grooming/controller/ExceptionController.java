@@ -7,8 +7,13 @@ import com.enigma.grooming.exception.UnauthorizedException;
 import com.enigma.grooming.model.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -27,5 +32,14 @@ public class ExceptionController {
     @ExceptionHandler(RestTemplateException.class)
     ResponseEntity<ErrorResponse> restTemplateException(RestTemplateException exception){
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ErrorResponse("X07", exception.getMessage()));
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgument(MethodArgumentNotValidException exception) {
+        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
+        List<String> errors = new ArrayList<>();
+        for (FieldError error: fieldErrors) {
+            errors.add(error.getDefaultMessage());
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("X02", errors.toString()));
     }
 }
