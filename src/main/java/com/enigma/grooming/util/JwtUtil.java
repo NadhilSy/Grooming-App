@@ -11,8 +11,7 @@ public class JwtUtil {
     @Value("${jwt.jwt_secret}")
     private String jwtSecret;
     @Value("${jwt.jwt_expire}")
-    private Integer jwtExpiration;
-
+    private  Integer jwtExpiration;
     public String generateToken(String subject) {
         return Jwts.builder()
                 .setSubject(subject)
@@ -23,9 +22,17 @@ public class JwtUtil {
     }
 
     public String getTokenSubject(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
-
+    public String getUserName(String token){
+        return getTokenSubject(token).split(" ")[1];
+    }
+    public String getMail(String token){
+        return getTokenSubject(token).split(" ")[0];
+    }
     public boolean validateJwtToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);

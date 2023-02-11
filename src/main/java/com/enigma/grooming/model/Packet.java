@@ -24,4 +24,7 @@ public class Packet {
 
     @Column(name = "price")
     private String price;
+
+    @Column(name = "icon")
+    private String icon;
 }

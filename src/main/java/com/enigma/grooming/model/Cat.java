@@ -1,9 +1,11 @@
 package com.enigma.grooming.model;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 
 @Getter
 @Setter
@@ -12,9 +14,10 @@ import lombok.ToString;
 @Table
 public class Cat {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     @Column(name = "cat_id")
-    private Integer catId;
+    private String catId;
 
     @Column(name = "cat_name")
     private String catName;
@@ -31,8 +34,13 @@ public class Cat {
     @Column(name = "cat_image_url")
     private String catImageUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+//    @ToString.Exclude
+//    private User user;
+
     @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

@@ -10,7 +10,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class SimpleInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("PRE HANDLE");
         return true;
     }
 }

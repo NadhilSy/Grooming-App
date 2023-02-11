@@ -10,4 +10,5 @@ public class PacketRequest {
     private String packageName;
     private String description;
     private String price;
+    private String icon;
 }

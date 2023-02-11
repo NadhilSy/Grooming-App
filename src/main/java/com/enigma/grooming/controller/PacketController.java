@@ -22,13 +22,11 @@ public class PacketController {
     public PacketController(@Autowired PacketService packetService) {
         this.packetService = packetService;
     }
-
     @PostMapping
     public ResponseEntity createPacket(@Valid @RequestBody PacketRequest packetRequest){
         Packet result = packetService.create(packetRequest);
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("",result));
     }
-
     @GetMapping
     public ResponseEntity getAllPacket(
             @RequestParam(defaultValue = "1") Integer page,
@@ -39,13 +37,11 @@ public class PacketController {
         Page<Packet> packets = packetService.getList(page, size, direction, sortBy);
         return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Success get packets", packets));
     }
-
     @PutMapping("/{id}")
     public ResponseEntity updateById(@Valid @RequestBody PacketRequest packetRequest, @PathVariable("id") Integer id) {
         packetService.update(packetRequest, id);
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Success update packet", packetRequest));
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity deleteById(@PathVariable("id") Integer id){
         packetService.delete(id);

@@ -1,5 +1,7 @@
 package com.enigma.grooming.service;
 
+import com.enigma.grooming.model.Auth;
+import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.User;
 import com.enigma.grooming.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -39,5 +41,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public User create(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findByName(String name) {
+        return userRepository.findByName(name);
+    }
+
+    @Override
+    public Optional<User> findByAuth(Auth auth) {
+        return userRepository.findByAuth(auth);
+    }
+
+    @Override
+    public Optional<User> findBySystemAuth(SystemAuth auth) {
+        return userRepository.findBySystemAuth(auth);
     }
 }

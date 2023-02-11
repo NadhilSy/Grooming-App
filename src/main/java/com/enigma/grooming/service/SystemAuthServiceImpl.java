@@ -62,8 +62,8 @@ public class SystemAuthServiceImpl implements SystemAuthService {
             } else if (!auth.get().getPassword().equals(loginRequest.getPassword())) {
                 throw new UnauthorizedException("Password not matched");
             }
-
-            String token = jwtUtil.generateToken(loginRequest.getEmail());
+            var userInfo = userService.findBySystemAuth(auth.get());
+            String token = jwtUtil.generateToken(loginRequest.getEmail()+" "+userInfo.get().getName());
             return token;
 
         } catch (Exception e) {
@@ -71,5 +71,14 @@ public class SystemAuthServiceImpl implements SystemAuthService {
         }
     }
 
+    @Override
+    public SystemAuth findByEmail(String email) {
+        Optional<SystemAuth> result = systemAuthRepository.findByEmail(email);
+        if (result.isPresent()){
+            return result.get();
+        }
+        throw new NotFoundException("Username with email "+ email + "is not exists");
+    }
 
+//    public Optional<SystemAuth> findByEmailOpt(String email){}
 }
