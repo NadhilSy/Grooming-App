@@ -58,4 +58,11 @@ public class TransactionController {
         TransactionResponse response = new TransactionResponse(trx);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PutMapping("/approve/{id}")
+    public ResponseEntity<CommonResponse> approve(@PathVariable(name = "id") Integer id) {
+        Transaction trx = transactionService.approve(id);
+        SuccessResponse<TransactionResponse> response = new SuccessResponse<TransactionResponse>("Success approve transactions", new TransactionResponse(trx));
+        return ResponseEntity.ok(response);
+    }
 }
