@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Setter
 @Getter
 @ToString
@@ -26,4 +29,6 @@ public class Transaction {
     private Cat cat;
     @Enumerated(EnumType.STRING)
     TrxStatus status;
+    @Temporal(TemporalType.DATE)
+    LocalDate dateIssued;
 }

@@ -22,8 +22,9 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
             return true;
         } else {
             boolean validated = validateToken(request);
-            if (AdminRoute(request.getRequestURI()) && request.getMethod().equals("POST")) {
-                System.out.println("admin route");
+            var adminRoute = (AdminRoute(request.getRequestURI()) && request.getMethod().equals("POST"))
+                    || (AdminRoute(request.getRequestURI()) && request.getMethod().equals("POST"));
+            if (adminRoute) {
                 return isAdmin(request);
             }
             if (validated) {
@@ -41,7 +42,7 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
     }
 
     private boolean AdminRoute(String route) {
-        String[] admin = {"/packages"};
+        String[] admin = {"/packages", "/transactions/approve"};
         return Arrays.stream(admin).anyMatch(route::contains);
     }
 

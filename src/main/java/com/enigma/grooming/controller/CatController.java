@@ -1,14 +1,11 @@
 package com.enigma.grooming.controller;
 
-import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Cat;
 import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.User;
 import com.enigma.grooming.model.request.CatListRequest;
 import com.enigma.grooming.model.request.CatRequest;
-import com.enigma.grooming.model.response.CatCreateResponse;
-import com.enigma.grooming.model.response.PagingResponse;
-import com.enigma.grooming.model.response.SuccessResponse;
+import com.enigma.grooming.model.response.*;
 import com.enigma.grooming.service.CatService;
 import com.enigma.grooming.service.SystemAuthService;
 import com.enigma.grooming.service.UserService;
@@ -25,15 +22,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/cats")
 public class CatController {
+    private CatService catService;
+    JwtUtil jwtUtil;
+    SystemAuthService systemAuthService;
+    UserService userService;
 
     @Autowired
-    private CatService catService;
-    @Autowired
-    JwtUtil jwtUtil;
-    @Autowired
-    SystemAuthService systemAuthService;
-    @Autowired
-    UserService userService;
+    public CatController(CatService catService, JwtUtil jwtUtil, SystemAuthService systemAuthService, UserService userService) {
+        this.catService = catService;
+        this.jwtUtil = jwtUtil;
+        this.systemAuthService = systemAuthService;
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity createCat(@Valid @RequestBody CatRequest catRequest, @RequestHeader("Authorization") String token) {
@@ -47,22 +47,8 @@ public class CatController {
         CatCreateResponse catCreateResponse = new CatCreateResponse(result, result.getUser());
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("", catCreateResponse));
     }
-
-    //for admin
     @GetMapping
-    public ResponseEntity getAllCats(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "DESC") String direction,
-            @RequestParam(defaultValue = "catName") String sortBy
-    ) {
-        Page<Cat> cats = catService.getList(page, size, direction, sortBy);
-        return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Success get cats", cats));
-    }
-
-    //for user
-    @GetMapping("/user")
-    public ResponseEntity getAllCatsByUser(
+    public ResponseEntity<CommonResponse> getAllCatsByUser(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "DESC") String direction,
@@ -72,10 +58,10 @@ public class CatController {
         String mail = jwtUtil.getMail(token.split(" ")[1]);
         SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
         Optional<User> user = userService.findBySystemAuth(existingSysAuth);
-        CatListRequest catListRequest = new CatListRequest();
-        catListRequest.setUserInfo(user.get());
-        Page<Cat> cats = catService.getListByUser(page, size, direction, sortBy, new CatListRequest());
-        return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Succes get cats", cats));
+        System.out.println(user);
+        Page<Cat> cats = catService.getListByUser(page, size, direction, sortBy, user.get());
+        System.out.println(cats);
+        return ResponseEntity.status(HttpStatus.OK).body(new CatResponse(cats.getContent(),user.get()));
     }
 
     @PutMapping("/{id}")

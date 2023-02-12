@@ -3,10 +3,9 @@ package com.enigma.grooming.service;
 import com.enigma.grooming.exception.EntityExistException;
 import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Cat;
-import com.enigma.grooming.model.request.CatListRequest;
+import com.enigma.grooming.model.User;
 import com.enigma.grooming.model.request.CatRequest;
 import com.enigma.grooming.repository.CatRepository;
-import com.enigma.grooming.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,12 +56,10 @@ public class CatServiceImpl implements CatService {
     }
 
     @Override
-    public Page<Cat> getListByUser(Integer page, Integer size, String direction, String sortBy, CatListRequest catListRequest) {
+    public Page<Cat> getListByUser(Integer page, Integer size, String direction, String sortBy, User user) {
         Sort sort = Sort.by(Sort.Direction.valueOf(direction), sortBy);
         Pageable pageable = PageRequest.of((page - 1), size, sort);
-        Page<Cat> result = catRepository.findAllByUser(catListRequest.getUserInfo(), pageable);
-        System.out.println(result);
-        return result;
+        return catRepository.findAllByUser(user, pageable);
     }
 
     @Override

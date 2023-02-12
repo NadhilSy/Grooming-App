@@ -22,7 +22,7 @@ public class User {
     @JoinColumn(name = "emailGoogle", referencedColumnName = "email", unique = true)
     private Auth auth;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "email", referencedColumnName = "email", unique = true)
     private SystemAuth systemAuth;
 

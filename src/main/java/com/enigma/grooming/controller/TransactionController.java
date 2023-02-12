@@ -4,7 +4,10 @@ import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.Transaction;
 import com.enigma.grooming.model.User;
 import com.enigma.grooming.model.request.TransactionRequest;
+import com.enigma.grooming.model.response.CommonResponse;
 import com.enigma.grooming.model.response.PagingResponse;
+import com.enigma.grooming.model.response.SuccessResponse;
+import com.enigma.grooming.model.response.TransactionResponse;
 import com.enigma.grooming.service.SystemAuthService;
 import com.enigma.grooming.service.TransactionService;
 import com.enigma.grooming.service.UserService;
@@ -32,19 +35,27 @@ public class TransactionController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "DESC") String direction,
-            @RequestParam(defaultValue = "transaction_id") String sortBy
+            @RequestParam(defaultValue = "transactionId") String sortBy
     ) {
         Page<Transaction> transactions = transactionService.getAll(page, size, direction, sortBy);
         return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Success get cats", transactions));
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<CommonResponse> getById(@PathVariable(name = "id") Integer id) {
+        Transaction trx = transactionService.getById(id);
+        return ResponseEntity.ok(new SuccessResponse<Transaction>("Success get data", trx));
+    }
+
     @PostMapping
-    public ResponseEntity make(@RequestBody TransactionRequest request, @RequestHeader(name = "Authorization") String authorization) {
+    public ResponseEntity<CommonResponse> make(@RequestBody TransactionRequest request, @RequestHeader(name = "Authorization") String authorization) {
         String token = authorization.split(" ")[1];
         String email = jwtUtil.getMail(token);
         SystemAuth systemAuth = systemAuthService.findByEmail(email);
         User user = userService.findBySystemAuth(systemAuth).get();
         request.setUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionService.make(request));
+        Transaction trx = transactionService.make(request);
+        TransactionResponse response = new TransactionResponse(trx);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

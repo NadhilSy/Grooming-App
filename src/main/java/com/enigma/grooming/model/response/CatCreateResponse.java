@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Data
 public class CatCreateResponse {
+    private String catId;
     private String catName;
     private String catColor;
     private String gender;
@@ -25,6 +26,7 @@ public class CatCreateResponse {
     Owner owner;
 
     public CatCreateResponse(Cat cat, User user) {
+        setCatId(cat.getCatId());
         setCatName(cat.getCatName());
         setCatColor(cat.getColor());
         setGender(cat.getGender());

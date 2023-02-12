@@ -1,10 +1,11 @@
 package com.enigma.grooming.model.response;
 
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-
+@NoArgsConstructor
 public class PagingResponse<T> extends CommonResponse {
     private List<T> data;
     private long count;

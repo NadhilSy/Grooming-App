@@ -1,11 +1,13 @@
 package com.enigma.grooming.model.response;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class SuccessResponse<T> extends CommonResponse {
     T data;
 //    String token;

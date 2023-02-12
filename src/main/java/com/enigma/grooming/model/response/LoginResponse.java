@@ -1,17 +1,17 @@
 package com.enigma.grooming.model.response;
 
-import com.enigma.grooming.util.JwtUtil;
+import com.enigma.grooming.model.User;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Setter;
+
 @Getter
-public class LoginResponse extends CommonResponse{
-    String data;
-    String  token;
+public class LoginResponse extends CommonResponse {
+    @Getter
+    @Setter
     private class Data {
         String name;
         String role;
         String imageUrl;
-        String token;
 
         public Data(String name, String role, String imageUrl) {
             this.name = name;
@@ -19,13 +19,17 @@ public class LoginResponse extends CommonResponse{
             this.imageUrl = imageUrl;
         }
     }
-    public LoginResponse(String resp,String token) {
+
+    private Data data;
+    private String token;
+
+    public LoginResponse(String name, String role, String imageUrl, String token) {
         super();
         super.setStatus("Success");
         super.setMessage("Login success");
         super.setCode("00");
+        this.data = new Data(name, role, imageUrl);
         this.token = token;
-        this.data = resp;
-//        Data data = new Data("","","");
+
     }
 }

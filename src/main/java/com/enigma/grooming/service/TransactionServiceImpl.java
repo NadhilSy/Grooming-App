@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -45,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction make(TransactionRequest request) {
         User user = modelMapper.map(request.getUser(), User.class);
+        System.out.println(request.getPacketId());
         Packet packet = packetService.get(request.getPacketId());
         Cat cat = catService.get(request.getCatId());
         Transaction trx = new Transaction();
@@ -52,6 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
         trx.setStatus(TrxStatus.PENDING);
         trx.setUser(user);
         trx.setCat(cat);
+        trx.setDateIssued(LocalDate.now());
         return transactionRepository.save(trx);
     }
 

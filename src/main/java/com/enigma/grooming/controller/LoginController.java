@@ -1,5 +1,6 @@
 package com.enigma.grooming.controller;
 
+import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.User;
 import com.enigma.grooming.model.request.LoginRequest;
 import com.enigma.grooming.model.request.RegistrationRequest;
@@ -58,7 +59,10 @@ public class LoginController {
 //        GoogleAccountRequest google = modelMapper.map(data,GoogleAccountRequest.class);
         String token = systemAuthService.login(loginRequest);
         String name = jwtUtil.getUserName(token);
-        LoginResponse loginResponse = new LoginResponse(name, token);
+        String mail = jwtUtil.getMail(token);
+        SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
+        User user = userService.findBySystemAuth(existingSysAuth).get();
+        LoginResponse loginResponse = new LoginResponse(user.getName(), user.getSystemAuth().getRole().toString(), user.getPhoto(), token);
 //        User userInfo = userService.findBySystemAuth(systemAuthService.findByEmail(jwtUtil.getMail(token))).get();
 //        System.out.println(google);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
