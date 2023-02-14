@@ -11,4 +11,6 @@ public interface TransactionService {
     Transaction make(TransactionRequest request);
     Transaction approve(Integer id) throws NotFoundException;
     Transaction setStatus(String status, Integer id);
+    String finish(Integer id);
+    Long getTotal();
 }

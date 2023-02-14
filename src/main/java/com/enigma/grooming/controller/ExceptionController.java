@@ -1,10 +1,8 @@
 package com.enigma.grooming.controller;
 
-import com.enigma.grooming.exception.EntityExistException;
-import com.enigma.grooming.exception.NotFoundException;
-import com.enigma.grooming.exception.RestTemplateException;
-import com.enigma.grooming.exception.UnauthorizedException;
+import com.enigma.grooming.exception.*;
 import com.enigma.grooming.model.response.ErrorResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,6 +18,17 @@ public class ExceptionController {
     @ExceptionHandler(EntityExistException.class)
     public ResponseEntity<ErrorResponse> handleEntityExistViolationException(EntityExistException exception){
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorResponse("X03", exception.getMessage()));
+    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleJwtExpires(RuntimeException e){
+        if (e.getMessage().equals("JWT token expired")){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("401",e.getMessage()));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("X01",e.getMessage()));
+    }
+    @ExceptionHandler(NeedApprovalException.class)
+    public ResponseEntity<ErrorResponse> handleNeedApprovalException(NeedApprovalException e){
+        return ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse("X80",e.getMessage()));
     }
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleDataNotFoundException(NotFoundException exception){

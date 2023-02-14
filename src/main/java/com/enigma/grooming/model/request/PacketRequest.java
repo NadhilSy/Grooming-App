@@ -14,6 +14,6 @@ public class PacketRequest {
     @Length(min = 20)
     private String description;
     @Min(value = 0)
-    private String price;
+    private Long price;
     private String icon;
 }

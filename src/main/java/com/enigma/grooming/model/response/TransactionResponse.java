@@ -32,7 +32,7 @@ public class TransactionResponse extends CommonResponse {
         data.setCat(new CatEncapsulated(cat));
         data.setPacket(trx.getPacket());
         data.setStatus(trx.getStatus());
-        User user = trx.getUser();
+        User user = trx.getCustomer();
         data.setUser(new UserEncapsulated(user.getUserId(), user.getName(), user.getAddress(), user.getPhoneNumber(), user.getSystemAuth().getRole()));
     }
 }

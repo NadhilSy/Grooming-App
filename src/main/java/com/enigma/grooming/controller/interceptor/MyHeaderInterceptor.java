@@ -21,17 +21,7 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
                 request.getRequestURI().contains("/auth/register")) {
             return true;
         } else {
-            boolean validated = validateToken(request);
-            var adminRoute = (AdminRoute(request.getRequestURI()) && request.getMethod().equals("POST"))
-                    || (AdminRoute(request.getRequestURI()) && request.getMethod().equals("POST"));
-            if (adminRoute) {
-                return isAdmin(request);
-            }
-            if (validated) {
-                return true;
-            } else {
-                throw new UnauthorizedException();
-            }
+            return validateToken(request);
         }
     }
 

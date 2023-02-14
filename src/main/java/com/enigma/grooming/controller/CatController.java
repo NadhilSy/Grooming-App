@@ -58,9 +58,7 @@ public class CatController {
         String mail = jwtUtil.getMail(token.split(" ")[1]);
         SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
         Optional<User> user = userService.findBySystemAuth(existingSysAuth);
-        System.out.println(user);
         Page<Cat> cats = catService.getListByUser(page, size, direction, sortBy, user.get());
-        System.out.println(cats);
         return ResponseEntity.status(HttpStatus.OK).body(new CatResponse(cats.getContent(),user.get()));
     }
 

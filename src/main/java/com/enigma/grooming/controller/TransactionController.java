@@ -14,9 +14,12 @@ import com.enigma.grooming.service.UserService;
 import com.enigma.grooming.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/transactions")
@@ -31,7 +34,7 @@ public class TransactionController {
     JwtUtil jwtUtil;
 
     @GetMapping
-    public ResponseEntity getAllTrx(
+    public ResponseEntity<CommonResponse> getAllTrx(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "5") Integer size,
             @RequestParam(defaultValue = "DESC") String direction,
@@ -44,7 +47,8 @@ public class TransactionController {
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse> getById(@PathVariable(name = "id") Integer id) {
         Transaction trx = transactionService.getById(id);
-        return ResponseEntity.ok(new SuccessResponse<Transaction>("Success get data", trx));
+        TransactionResponse transactionResponse = new TransactionResponse(trx);
+        return ResponseEntity.ok(transactionResponse);
     }
 
     @PostMapping
@@ -63,6 +67,19 @@ public class TransactionController {
     public ResponseEntity<CommonResponse> approve(@PathVariable(name = "id") Integer id) {
         Transaction trx = transactionService.approve(id);
         SuccessResponse<TransactionResponse> response = new SuccessResponse<TransactionResponse>("Success approve transactions", new TransactionResponse(trx));
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/finish/{id}")
+    public ResponseEntity<CommonResponse> finishTransaction(@PathVariable(name = "id") Integer id) {
+        String response = transactionService.finish(id);
+        SuccessResponse<String> resp = new SuccessResponse<>(response, "Ok");
+        return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<CommonResponse> getSummary() {
+        SuccessResponse<Long> response = new SuccessResponse<>("success get data", transactionService.getTotal());
         return ResponseEntity.ok(response);
     }
 }

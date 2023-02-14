@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Setter
 @Getter
@@ -19,16 +18,20 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
     private Integer transactionId;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "package_id", referencedColumnName = "package_id", nullable = false)
     private Packet packet;
-    @OneToOne
-    private User user;
-    @OneToOne
+    @Column(name = "total")
+    Long total;
+    @ManyToOne
+    @JoinColumn(name = "customer")
+    private User customer;
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "cat_id", referencedColumnName = "cat_id", nullable = false)
     private Cat cat;
     @Enumerated(EnumType.STRING)
     TrxStatus status;
     @Temporal(TemporalType.DATE)
-    LocalDate dateIssued;
+            @Column(name = "date_created")
+    LocalDate dateCreated;
 }

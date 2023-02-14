@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table
+@Table(name = "package")
 public class Packet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Packet {
     private String description;
 
     @Column(name = "price")
-    private String price;
+    private Long price;
 
     @Column(name = "icon")
     private String icon;

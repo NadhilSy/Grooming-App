@@ -1,5 +1,6 @@
 package com.enigma.grooming.service;
 
+import com.enigma.grooming.exception.NeedApprovalException;
 import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Cat;
 import com.enigma.grooming.model.Packet;
@@ -46,15 +47,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction make(TransactionRequest request) {
         User user = modelMapper.map(request.getUser(), User.class);
-        System.out.println(request.getPacketId());
         Packet packet = packetService.get(request.getPacketId());
         Cat cat = catService.get(request.getCatId());
         Transaction trx = new Transaction();
         trx.setPacket(packet);
         trx.setStatus(TrxStatus.PENDING);
-        trx.setUser(user);
+        trx.setCustomer(user);
         trx.setCat(cat);
-        trx.setDateIssued(LocalDate.now());
+        trx.setTotal(packet.getPrice());
+        trx.setDateCreated(LocalDate.now());
         return transactionRepository.save(trx);
     }
 
@@ -81,5 +82,20 @@ public class TransactionServiceImpl implements TransactionService {
         TrxStatus trxStatus = TrxStatus.valueOf(status);
         trx.setStatus(trxStatus);
         return trx;
+    }
+
+    @Override
+    public String finish(Integer id) {
+        Transaction trx = getById(id);
+        if (trx.getStatus().toString().equals("PENDING")){
+            throw new NeedApprovalException();
+        }
+        trx.setStatus(TrxStatus.PAID);
+        return "Transactions success with id:" + trx.getTransactionId();
+    }
+
+    @Override
+    public Long getTotal() {
+        return transactionRepository.getThisMonthTotal();
     }
 }
