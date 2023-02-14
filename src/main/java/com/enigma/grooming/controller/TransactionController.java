@@ -1,5 +1,6 @@
 package com.enigma.grooming.controller;
 
+import com.enigma.grooming.model.Summary;
 import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.Transaction;
 import com.enigma.grooming.model.User;
@@ -79,7 +80,7 @@ public class TransactionController {
 
     @GetMapping("/summary")
     public ResponseEntity<CommonResponse> getSummary() {
-        SuccessResponse<Long> response = new SuccessResponse<>("success get data", transactionService.getTotal());
+        SuccessResponse<Summary> response = new SuccessResponse<>("success get data", transactionService.getTotal());
         return ResponseEntity.ok(response);
     }
 }

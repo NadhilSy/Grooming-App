@@ -2,10 +2,7 @@ package com.enigma.grooming.service;
 
 import com.enigma.grooming.exception.NeedApprovalException;
 import com.enigma.grooming.exception.NotFoundException;
-import com.enigma.grooming.model.Cat;
-import com.enigma.grooming.model.Packet;
-import com.enigma.grooming.model.Transaction;
-import com.enigma.grooming.model.User;
+import com.enigma.grooming.model.*;
 import com.enigma.grooming.model.constant.TrxStatus;
 import com.enigma.grooming.model.request.TransactionRequest;
 import com.enigma.grooming.repository.TransactionRepository;
@@ -87,7 +84,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public String finish(Integer id) {
         Transaction trx = getById(id);
-        if (trx.getStatus().toString().equals("PENDING")){
+        if (trx.getStatus().toString().equals("PENDING")) {
             throw new NeedApprovalException();
         }
         trx.setStatus(TrxStatus.PAID);
@@ -95,7 +92,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Long getTotal() {
-        return transactionRepository.getThisMonthTotal();
+    public Summary getTotal() {
+        Long thisMonthSale = transactionRepository.getThisMonthTotal();
+        Long omzet = transactionRepository.getOmzet();
+        Long thisMonthSum = transactionRepository.getThisMonthSum();
+        return new Summary(thisMonthSale, thisMonthSum, omzet,transactionRepository.getTopSpender());
     }
 }
