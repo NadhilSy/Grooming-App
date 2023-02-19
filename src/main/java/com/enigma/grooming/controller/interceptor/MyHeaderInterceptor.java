@@ -21,6 +21,18 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
                 request.getRequestURI().contains("/auth/register")) {
             return true;
         } else {
+            String uri = request.getRequestURI();
+            String httpMethod = request.getMethod();
+
+            boolean adminRoutes = (uri.matches("/transactions/(approve|finish)/\\d") && httpMethod.equals("PUT")) || (uri.matches("/packages") && httpMethod.equals("POST"));
+
+            if (adminRoutes) {
+                if (isAdmin(request)) {
+                    return true;
+                } else {
+                    throw new UnauthorizedException("Not enough role");
+                }
+            }
             return validateToken(request);
         }
     }

@@ -94,7 +94,7 @@ public class CatServiceImpl implements CatService {
     public Cat get(String id) {
         Optional<Cat> cat = catRepository.findById(id);
         if (cat.isEmpty()) {
-            throw new NotFoundException("Packet Not Found");
+            throw new NotFoundException("Cat Not Found");
         }
         return cat.get();
     }
