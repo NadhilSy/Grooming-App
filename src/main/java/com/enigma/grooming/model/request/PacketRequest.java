@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 public class PacketRequest {
     @NotBlank
     private String packageName;
-    @Length(min = 20)
+    @Length(min = 20, message = "minimum of description is 20 character long")
     private String description;
     @Min(value = 0)
     private Long price;

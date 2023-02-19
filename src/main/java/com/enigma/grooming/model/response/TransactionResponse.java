@@ -11,28 +11,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TransactionResponse extends CommonResponse {
-    @Getter
-    @Setter
-    private class Data {
-        private CatEncapsulated cat;
-        private Packet packet;
-        private UserEncapsulated user;
-        private TrxStatus status;
-    }
 
-    private Data data;
+    private EncapsulateTransaction data;
 
     public TransactionResponse(Transaction trx) {
         super();
         super.setCode("00");
         super.setStatus("OK");
         super.setMessage("Success make transaction");
-        this.data = new Data();
-        Cat cat = trx.getCat();
-        data.setCat(new CatEncapsulated(cat));
-        data.setPacket(trx.getPacket());
-        data.setStatus(trx.getStatus());
-        User user = trx.getCustomer();
-        data.setUser(new UserEncapsulated(user.getUserId(), user.getName(), user.getAddress(), user.getPhoneNumber(), user.getSystemAuth().getRole()));
+        this.data = new EncapsulateTransaction(trx);
     }
 }

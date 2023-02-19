@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -32,6 +33,6 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     TrxStatus status;
     @Temporal(TemporalType.DATE)
-            @Column(name = "date_created")
+    @Column(name = "date_created")
     LocalDate dateCreated;
 }

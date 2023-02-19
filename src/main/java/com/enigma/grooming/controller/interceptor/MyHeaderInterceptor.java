@@ -27,6 +27,7 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
             boolean adminRoutes = (uri.matches("/transactions/(approve|finish)/\\d") && httpMethod.equals("PUT")) || (uri.matches("/packages") && httpMethod.equals("POST"));
 
             if (adminRoutes) {
+                System.out.println(isAdmin(request));
                 if (isAdmin(request)) {
                     return true;
                 } else {
@@ -57,7 +58,8 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
         if (tokenIsValid) {
             String token = extractToken(request);
             String role = jwtUtil.getRole(token);
-            return role.equals("ADMIN");
+            System.out.println(role);
+            return role.equals("admin");
         }
         throw new UnauthorizedException("Not enough role");
     }

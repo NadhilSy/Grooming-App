@@ -5,6 +5,8 @@ import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.*;
 import com.enigma.grooming.model.constant.TrxStatus;
 import com.enigma.grooming.model.request.TransactionRequest;
+import com.enigma.grooming.model.response.EncapsulateTransaction;
+import com.enigma.grooming.model.response.TransactionResponse;
 import com.enigma.grooming.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -16,7 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -69,7 +74,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction approve(Integer id) throws NotFoundException {
         Transaction trx = getById(id);
-        trx.setStatus(TrxStatus.ON_GOING);
+        if (trx.getStatus().toString().equals("PAID")) {
+            throw new RuntimeException("You can't change paid transaction");
+        }
+        trx.setStatus(TrxStatus.ON_WAITING);
         return trx;
     }
 
@@ -96,6 +104,12 @@ public class TransactionServiceImpl implements TransactionService {
         Long thisMonthSale = transactionRepository.getThisMonthTotal();
         Long omzet = transactionRepository.getOmzet();
         Long thisMonthSum = transactionRepository.getThisMonthSum();
-        return new Summary(thisMonthSale, thisMonthSum, omzet,transactionRepository.getTopSpender());
+        return new Summary(thisMonthSale, thisMonthSum, omzet, transactionRepository.getTopSpender());
+    }
+
+    @Override
+    public List<EncapsulateTransaction> getAllByStatus(String status) {
+        List<Transaction> transactions = transactionRepository.getAllByStatus(TrxStatus.valueOf(status.toUpperCase()));
+        return transactions.stream().map(EncapsulateTransaction::new).collect(Collectors.toList());
     }
 }
