@@ -4,15 +4,16 @@ import com.enigma.grooming.model.Summary;
 import com.enigma.grooming.model.SystemAuth;
 import com.enigma.grooming.model.Transaction;
 import com.enigma.grooming.model.User;
-import com.enigma.grooming.model.constant.TrxStatus;
 import com.enigma.grooming.model.request.TransactionRequest;
-import com.enigma.grooming.model.response.*;
+import com.enigma.grooming.model.response.CommonResponse;
+import com.enigma.grooming.model.response.EncapsulateTransaction;
+import com.enigma.grooming.model.response.SuccessResponse;
+import com.enigma.grooming.model.response.TransactionResponse;
 import com.enigma.grooming.service.SystemAuthService;
 import com.enigma.grooming.service.TransactionService;
 import com.enigma.grooming.service.UserService;
 import com.enigma.grooming.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,14 +33,14 @@ public class TransactionController {
     JwtUtil jwtUtil;
 
     @GetMapping
-    public ResponseEntity<CommonResponse> getAllTrx(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "DESC") String direction,
-            @RequestParam(defaultValue = "transactionId") String sortBy
-    ) {
-        Page<Transaction> transactions = transactionService.getAll(page, size, direction, sortBy);
-        return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Success get cats", transactions));
+    public ResponseEntity<CommonResponse> getAllTrx(@RequestHeader(name = "Authorization") String authorization) {
+        String token = authorization.split(" ")[1];
+        String email = jwtUtil.getMail(token);
+        SystemAuth systemAuth = systemAuthService.findByEmail(email);
+        User user = userService.findBySystemAuth(systemAuth).get();
+        List<EncapsulateTransaction> transactions = transactionService.getAllByCustomer(user);
+        SuccessResponse<List<EncapsulateTransaction>> successResponse = new SuccessResponse("Success get all data",transactions);
+        return ResponseEntity.status(HttpStatus.OK).body(successResponse);
     }
 
     @GetMapping("{id}")
@@ -55,7 +56,6 @@ public class TransactionController {
         SuccessResponse<List<EncapsulateTransaction>> successResponse = new SuccessResponse("Success get all " + status + " Transactions", transactions);
         return ResponseEntity.ok(successResponse);
     }
-
     @PostMapping
     public ResponseEntity<CommonResponse> make(@RequestBody TransactionRequest request, @RequestHeader(name = "Authorization") String authorization) {
         String token = authorization.split(" ")[1];

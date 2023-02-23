@@ -25,7 +25,6 @@ public class MyHeaderInterceptor implements HandlerInterceptor {
             String httpMethod = request.getMethod();
 
             boolean adminRoutes = (uri.matches("/transactions/(approve|finish)/\\d") && httpMethod.equals("PUT")) || (uri.matches("/packages") && httpMethod.equals("POST"));
-
             if (adminRoutes) {
                 System.out.println(isAdmin(request));
                 if (isAdmin(request)) {

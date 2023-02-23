@@ -3,6 +3,7 @@ package com.enigma.grooming.service;
 import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Summary;
 import com.enigma.grooming.model.Transaction;
+import com.enigma.grooming.model.User;
 import com.enigma.grooming.model.request.TransactionRequest;
 import com.enigma.grooming.model.response.EncapsulateTransaction;
 import com.enigma.grooming.model.response.TransactionResponse;
@@ -25,6 +26,8 @@ public interface TransactionService {
     String finish(Integer id);
 
     List<EncapsulateTransaction> getAllByStatus(String status);
+
+    List<EncapsulateTransaction> getAllByCustomer(User user);
 
     Summary getTotal();
 }
