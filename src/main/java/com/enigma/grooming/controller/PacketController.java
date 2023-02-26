@@ -7,7 +7,6 @@ import com.enigma.grooming.model.response.PagingResponse;
 import com.enigma.grooming.model.response.SuccessResponse;
 import com.enigma.grooming.service.PacketService;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -30,17 +29,16 @@ public class PacketController {
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("", result));
     }
 
-    @GetMapping
-    public ResponseEntity getAllPacket(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "DESC") String direction,
-            @RequestParam(defaultValue = "packageName") String sortBy
-    ) {
-        Page<Packet> packets = packetService.getList(page, size, direction, sortBy);
-        return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Success get packets", packets));
-    }
-
+//    @GetMapping
+//    public ResponseEntity getAllPacket(
+//            @RequestParam(defaultValue = "1") Integer page,
+//            @RequestParam(defaultValue = "5") Integer size,
+//            @RequestParam(defaultValue = "DESC") String direction,
+//            @RequestParam(defaultValue = "packageName") String sortBy
+//    ) {
+//        Page<Packet> packets = packetService.getList(page, size, direction, sortBy);
+//        return ResponseEntity.status(HttpStatus.OK).body(new PagingResponse<>("Success get packets", packets));
+//    }
     @PutMapping("/{id}")
     public ResponseEntity updateById(@Valid @RequestBody PacketRequest packetRequest, @PathVariable("id") Integer id) {
         packetService.update(packetRequest, id);
@@ -58,6 +56,12 @@ public class PacketController {
         Packet packet = packetService.get(id);
         SuccessResponse<Packet> resp = new SuccessResponse<>("Success get packet", packet);
         return ResponseEntity.status(HttpStatus.OK).body(resp);
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse> getAllActive(@RequestParam(defaultValue = "false", name = "deleted", required = false) Boolean isDeleted) {
+        SuccessResponse<Iterable<Packet>> response = new SuccessResponse<>("success get all packet", packetService.getAll(isDeleted));
+        return ResponseEntity.ok(response);
     }
 
 

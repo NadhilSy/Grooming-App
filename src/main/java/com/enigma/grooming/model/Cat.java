@@ -11,7 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Setter
 @ToString
 @Entity
-@Table
+@Table(name = "cat")
 public class Cat {
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -33,7 +33,8 @@ public class Cat {
 
     @Column(name = "cat_image_url")
     private String catImageUrl;
-
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 //    @ManyToOne
 //    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
 //    @ToString.Exclude

@@ -5,9 +5,10 @@ import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Packet;
 import com.enigma.grooming.model.request.PacketRequest;
 import com.enigma.grooming.repository.PacketRepository;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,8 @@ public class PacketServiceImpl implements PacketService {
     private PacketRepository packetRepository;
     private ModelMapper modelMapper;
 
-    public PacketServiceImpl(@Autowired PacketRepository packetRepository,@Autowired ModelMapper modelMapper) {
+    @Autowired
+    public PacketServiceImpl(PacketRepository packetRepository, ModelMapper modelMapper) {
         this.packetRepository = packetRepository;
         this.modelMapper = modelMapper;
     }
@@ -34,12 +36,9 @@ public class PacketServiceImpl implements PacketService {
     @Override
     public Packet create(PacketRequest packetRequest) {
         try {
-
             Packet packet = modelMapper.map(packetRequest, Packet.class);
-//            Optional<Packet> packetOpt = packetRepository.findById()
             return packetRepository.save(packet);
-        }
-        catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             throw new EntityExistException();
         }
     }
@@ -61,7 +60,7 @@ public class PacketServiceImpl implements PacketService {
             existingPacket.setPrice(packetRequest.getPrice());
 
             packetRepository.save(existingPacket);
-        } catch (NotFoundException e){
+        } catch (NotFoundException e) {
             throw new NotFoundException("update failed because id not found");
         }
 
@@ -69,21 +68,20 @@ public class PacketServiceImpl implements PacketService {
 
     @Override
     public void delete(Integer id) {
-        try {
-            Packet existingPacket = get(id);
-            packetRepository.delete(existingPacket);
-        } catch (NotFoundException e){
-            throw new NotFoundException("Delete failed because Id is not found");
-        }
-
+            packetRepository.deleteById(id);
     }
 
     @Override
     public Packet get(Integer id) {
         Optional<Packet> packet = packetRepository.findById(id);
-        if (packet.isEmpty()){
+        if (packet.isEmpty()) {
             throw new NotFoundException("Packet Not Found");
         }
         return packet.get();
+    }
+
+    @Override
+    public List<Packet> getAll(Boolean isDeleted) {
+        return packetRepository.findAll(isDeleted);
     }
 }

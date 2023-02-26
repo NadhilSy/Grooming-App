@@ -3,8 +3,10 @@ package com.enigma.grooming.service;
 import com.enigma.grooming.exception.EntityExistException;
 import com.enigma.grooming.exception.NotFoundException;
 import com.enigma.grooming.model.Cat;
+import com.enigma.grooming.model.CatProjection;
 import com.enigma.grooming.model.User;
 import com.enigma.grooming.model.request.CatRequest;
+import com.enigma.grooming.model.response.CatEncapsulated;
 import com.enigma.grooming.repository.CatRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CatServiceImpl implements CatService {
@@ -81,13 +86,8 @@ public class CatServiceImpl implements CatService {
 
     @Override
     public void delete(String id) {
-        try {
-            Cat existingCat = get(id);
-            catRepository.delete(existingCat);
-        } catch (NotFoundException e) {
-            throw new NotFoundException("Delete failed because Id is not found");
-        }
-
+        get(id);
+        catRepository.deleteById(id);
     }
 
     @Override
@@ -99,4 +99,11 @@ public class CatServiceImpl implements CatService {
         return cat.get();
     }
 
+    @Override
+    public List<CatEncapsulated> getListByUser(User user, Boolean isDeleted) {
+        List<CatProjection> cats = catRepository.findAll(isDeleted, user.getUserId());
+        List<String> catIds = cats.stream().map(CatProjection::getCat_id).toList();
+        List<Cat> catResult = catRepository.findAllById(catIds);
+        return catResult.stream().map(CatEncapsulated::new).toList();
+    }
 }

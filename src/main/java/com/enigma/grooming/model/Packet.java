@@ -4,12 +4,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 @Getter
 @Setter
 @ToString
 @Entity
-@Table(name = "package")
+@Table(name = "packet")
 public class Packet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +28,6 @@ public class Packet {
 
     @Column(name = "price")
     private Long price;
-
-    @Column(name = "icon")
-    private String icon;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 }

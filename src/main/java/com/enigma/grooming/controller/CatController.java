@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -47,20 +48,21 @@ public class CatController {
         CatCreateResponse catCreateResponse = new CatCreateResponse(result, result.getUser());
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("", catCreateResponse));
     }
-    @GetMapping
-    public ResponseEntity<CommonResponse> getAllCatsByUser(
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "DESC") String direction,
-            @RequestParam(defaultValue = "catName") String sortBy,
-            @RequestHeader(name = "Authorization") String token
-    ) {
-        String mail = jwtUtil.getMail(token.split(" ")[1]);
-        SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
-        Optional<User> user = userService.findBySystemAuth(existingSysAuth);
-        Page<Cat> cats = catService.getListByUser(page, size, direction, sortBy, user.get());
-        return ResponseEntity.status(HttpStatus.OK).body(new CatResponse(cats.getContent(),user.get()));
-    }
+
+//    @GetMapping
+//    public ResponseEntity<CommonResponse> getAllCatsByUser(
+//            @RequestParam(defaultValue = "1") Integer page,
+//            @RequestParam(defaultValue = "100") Integer size,
+//            @RequestParam(defaultValue = "DESC") String direction,
+//            @RequestParam(defaultValue = "catName") String sortBy,
+//            @RequestHeader(name = "Authorization") String token
+//    ) {
+//        String mail = jwtUtil.getMail(token.split(" ")[1]);
+//        SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
+//        Optional<User> user = userService.findBySystemAuth(existingSysAuth);
+//        Page<Cat> cats = catService.getListByUser(page, size, direction, sortBy, user.get());
+//        return ResponseEntity.status(HttpStatus.OK).body(new CatResponse(cats.getContent(), user.get()));
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity updateById(@Valid @RequestBody CatRequest catRequest, @PathVariable("id") String id) {
@@ -72,5 +74,15 @@ public class CatController {
     public ResponseEntity deleteById(@PathVariable("id") String id) {
         catService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body(new SuccessResponse<>("Success delete cats", null));
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse> getAllByUser(@RequestParam(name = "deleted", defaultValue = "false") Boolean isDeleted, @RequestHeader(name = "Authorization") String token) {
+        String mail = jwtUtil.getMail(token.split(" ")[1]);
+        SystemAuth existingSysAuth = systemAuthService.findByEmail(mail);
+        Optional<User> user = userService.findBySystemAuth(existingSysAuth);
+        List<CatEncapsulated> cats = catService.getListByUser(user.get(), isDeleted);
+        SuccessResponse<List<CatEncapsulated>> resp = new SuccessResponse<>("Success get all cat", cats);
+        return ResponseEntity.ok(resp);
     }
 }
